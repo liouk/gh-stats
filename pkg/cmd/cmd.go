@@ -1,6 +1,9 @@
 package cmd
 
-import "github.com/urfave/cli"
+import (
+	"github.com/liouk/gh-stats/pkg/github"
+	"github.com/urfave/cli"
+)
 
 func NewCLIApp() *cli.App {
 	return &cli.App{
@@ -11,5 +14,6 @@ func NewCLIApp() *cli.App {
 }
 
 func root(c *cli.Context) error {
-	return cli.ShowAppHelp(c)
+	client := github.NewAuthenticatedClient()
+	return github.RunSimpleQuery(client)
 }
