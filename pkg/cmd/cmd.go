@@ -2,18 +2,24 @@ package cmd
 
 import (
 	"github.com/liouk/gh-stats/pkg/github"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 func NewCLIApp() *cli.App {
-	return &cli.App{
-		Name:   "gh-stats",
-		Usage:  "Generate GitHub user stats",
-		Action: root,
-	}
-}
+	ghClient := github.NewAuthenticatedClient()
 
-func root(c *cli.Context) error {
-	client := github.NewAuthenticatedClient()
-	return github.RunSimpleQuery(client)
+	cli.HelpFlag = &cli.BoolFlag{
+		Name:    "help",
+		Aliases: []string{"h"},
+		Usage:   "Shows help",
+	}
+
+	return &cli.App{
+		Name:  "gh-stats",
+		Usage: "Generate GitHub user stats",
+		Commands: []*cli.Command{
+			newReposCmd(ghClient),
+			newContributionsCmd(ghClient),
+		},
+	}
 }
