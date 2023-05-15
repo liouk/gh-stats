@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/liouk/gh-stats/pkg/cmd"
 )
@@ -13,6 +15,10 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		panic(err)
+		if strings.Contains(err.Error(), "Bad credentials") {
+			fmt.Printf("could not login to GitHub: %v\n", err)
+		} else {
+			panic(err)
+		}
 	}
 }
