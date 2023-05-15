@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/liouk/gh-stats/pkg/github"
@@ -13,13 +12,22 @@ func newContribCmd() *cli.Command {
 		Name:   "contrib",
 		Usage:  "Gets contribution stats",
 		Action: cmdContrib,
+		Flags: []cli.Flag{
+			&cli.StringSliceFlag{
+				Name:  "in-depth",
+				Usage: "list of repo names that will be analysed in-depth",
+			},
+		},
 	}
 }
 
 func cmdContrib(cCtx *cli.Context) error {
-	ctx := context.Background()
-	ghClient := github.NewAuthenticatedClient()
-	numCommits, err := github.ContribStats(ctx, ghClient)
+	gh, err := github.NewAuthenticatedGitHubContext()
+	if err != nil {
+		return err
+	}
+
+	numCommits, err := gh.ContribStats(cCtx.StringSlice("in-depth"))
 	if err != nil {
 		return err
 	}

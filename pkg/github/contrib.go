@@ -1,7 +1,6 @@
 package github
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -27,18 +26,19 @@ type contribQuery struct {
 	}
 }
 
-func ContribStats(ctx context.Context, c *githubv4.Client) (int, error) {
+func (c *AuthenticatedGitHubContext) ContribStats(inDepth []string) (int, error) {
 	var viewer struct {
 		Viewer struct {
 			CreatedAt time.Time
 		}
 	}
-	err := c.Query(ctx, &viewer, nil)
+	err := c.githubClient.Query(c.ctx, &viewer, nil)
 	if err != nil {
 		return 0, err
 	}
 
 	totalContrib := 0
+	inDepthRepos := sliceToMap(inDepth)
 	for fromTime := viewer.Viewer.CreatedAt; fromTime.Before(time.Now()); fromTime = fromTime.AddDate(1, 0, 0) {
 		fmt.Println("FROM TIME:", fromTime)
 		var contrib contribQuery
@@ -46,17 +46,41 @@ func ContribStats(ctx context.Context, c *githubv4.Client) (int, error) {
 			"fromTime": githubv4.DateTime{Time: fromTime},
 		}
 
-		err = c.Query(ctx, &contrib, vars)
+		err = c.githubClient.Query(c.ctx, &contrib, vars)
 		if err != nil {
 			return 0, err
 		}
 
 		for _, repo := range contrib.Viewer.ContributionsCollection.CommitContributionsByRepository {
+			if _, exists := inDepthRepos[repo.Repository.Name]; exists {
+				// skip repos that will be analysed in-depth
+				fmt.Printf("(skipping %s; will analyse in-depth)", repo.Repository.Name)
+				continue
+			}
+
 			fmt.Println(repo.Repository.Name, repo.Contributions.TotalCount)
 			totalContrib += repo.Contributions.TotalCount
 		}
 
 	}
 
-	return totalContrib, nil
+	totalInDepth, err := c.inDepthStats(inDepth)
+	if err != nil {
+		return 0, nil
+	}
+
+	return totalContrib + totalInDepth, nil
+}
+
+func (c *AuthenticatedGitHubContext) inDepthStats(inDepth []string) (int, error) {
+	return 0, nil
+}
+
+func sliceToMap(slice []string) map[string]struct{} {
+	m := map[string]struct{}{}
+	for _, s := range slice {
+		m[s] = struct{}{}
+	}
+
+	return m
 }

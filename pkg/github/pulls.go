@@ -1,12 +1,6 @@
 package github
 
-import (
-	"context"
-
-	"github.com/shurcooL/githubv4"
-)
-
-func NumPulls(ctx context.Context, c *githubv4.Client) (int, error) {
+func (c *AuthenticatedGitHubContext) NumPulls() (int, error) {
 	var pulls struct {
 		Viewer struct {
 			PullRequests struct {
@@ -14,7 +8,7 @@ func NumPulls(ctx context.Context, c *githubv4.Client) (int, error) {
 			}
 		}
 	}
-	if err := c.Query(ctx, &pulls, nil); err != nil {
+	if err := c.githubClient.Query(c.ctx, &pulls, nil); err != nil {
 		return 0, err
 	}
 

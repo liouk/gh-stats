@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/liouk/gh-stats/pkg/github"
@@ -17,21 +16,24 @@ func newReposCmd() *cli.Command {
 }
 
 func cmdRepos(cCtx *cli.Context) error {
-	ctx := context.Background()
-	ghClient := github.NewAuthenticatedClient()
-	numRepos, err := github.NumRepos(ctx, ghClient)
+	gh, err := github.NewAuthenticatedGitHubContext()
+	if err != nil {
+		return err
+	}
+
+	numRepos, err := gh.NumRepos()
 	if err != nil {
 		return err
 	}
 	fmt.Println("repos:", numRepos)
 
-	numForks, err := github.NumForks(ctx, ghClient)
+	numForks, err := gh.NumForks()
 	if err != nil {
 		return err
 	}
 	fmt.Println("forks:", numForks)
 
-	numPulls, err := github.NumPulls(ctx, ghClient)
+	numPulls, err := gh.NumPulls()
 	if err != nil {
 		return err
 	}
