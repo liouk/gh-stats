@@ -12,12 +12,6 @@ func newCommitsCmd() *cli.Command {
 		Name:   "commits",
 		Usage:  "Gets commits stats",
 		Action: cmdCommits,
-		Flags: []cli.Flag{
-			&cli.StringSliceFlag{
-				Name:  "in-depth",
-				Usage: "list of repo names that will be analysed in-depth",
-			},
-		},
 	}
 }
 
@@ -32,11 +26,11 @@ func cmdCommits(cCtx *cli.Context) error {
 }
 
 func cmdCommitsWithGitHubContext(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext) error {
-	numCommits, err := gh.NumCommits(cCtx.StringSlice("in-depth"), cCtx.Bool("verbose"))
+	numCommits, err := gh.NumCommits()
 	if err != nil {
 		return err
 	}
 
-	log.Logf("%s Commits: %d\n", icons.Commit, numCommits)
+	log.Logf("%sCommits: %d\n", icons.Commit, numCommits)
 	return nil
 }

@@ -11,12 +11,6 @@ func newAllCmd() *cli.Command {
 		Name:   "all",
 		Usage:  "Gets all stats (repos, commits, reviews)",
 		Action: cmdAll,
-		Flags: []cli.Flag{
-			&cli.StringSliceFlag{
-				Name:  "in-depth",
-				Usage: "list of repo names that will be analysed in-depth",
-			},
-		},
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/liouk/gh-stats/pkg/auth"
 	"github.com/liouk/gh-stats/pkg/icons"
@@ -14,8 +13,9 @@ import (
 
 type viewerInfo struct {
 	Viewer struct {
-		Login     string
-		CreatedAt time.Time
+		ID        githubv4.ID
+		Login     githubv4.String
+		CreatedAt githubv4.DateTime
 	}
 }
 

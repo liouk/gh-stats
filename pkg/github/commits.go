@@ -1,100 +1,49 @@
 package github
 
 import (
-	"time"
-
 	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/log"
 	"github.com/shurcooL/githubv4"
 )
 
-type commitsQuery struct {
-	Viewer struct {
-		ContributionsCollection struct {
-			CommitContributionsByRepository []struct {
-				Contributions struct {
-					TotalCount int
-					Nodes      []struct {
-						CommitCount int
-						OccurredAt  time.Time
-					}
-				} `graphql:"contributions(first:100)"`
-				Repository struct {
-					Name string
-				}
-			} `graphql:"commitContributionsByRepository(maxRepositories: 100)"`
-		} `graphql:"contributionsCollection(from: $fromTime)"`
-	}
-}
-
-func (c *AuthenticatedGitHubContext) NumCommits(inDepth []string, verbose bool) (int, error) {
-	var viewer struct {
+func (c *AuthenticatedGitHubContext) NumCommits() (int, error) {
+	var repoQuery struct {
 		Viewer struct {
-			CreatedAt time.Time
+			Repositories struct {
+				Nodes []struct {
+					Name             string
+					DefaultBranchRef struct {
+						Target struct {
+							SpreadCommits struct {
+								History struct {
+									TotalCount int
+								} `graphql:"history(since: $since, author: {id: $author_id})"`
+							} `graphql:"... on Commit"`
+						}
+					}
+				}
+			} `graphql:"repositories(first: 100, affiliations: OWNER)"`
 		}
 	}
-	err := c.githubClient.Query(c.ctx, &viewer, nil)
+
+	vars := map[string]interface{}{
+		"author_id": c.viewer.Viewer.ID,
+		"since":     githubv4.GitTimestamp{Time: c.viewer.Viewer.CreatedAt.Time},
+	}
+
+	err := c.githubClient.Query(c.ctx, &repoQuery, vars)
 	if err != nil {
 		return 0, err
 	}
 
-	totalCommits := 0
-	inDepthRepos := sliceToMap(inDepth)
-	perRepo := map[string]int{}
-	for fromTime := viewer.Viewer.CreatedAt; fromTime.Before(time.Now()); fromTime = fromTime.AddDate(1, 0, 0) {
-		log.Logvf("FROM TIME: %s\n", fromTime)
-		var commits commitsQuery
-		vars := map[string]interface{}{
-			"fromTime": githubv4.DateTime{Time: fromTime},
-		}
-
-		err = c.githubClient.Query(c.ctx, &commits, vars)
-		if err != nil {
-			return 0, err
-		}
-
-		for _, repo := range commits.Viewer.ContributionsCollection.CommitContributionsByRepository {
-			if _, exists := inDepthRepos[repo.Repository.Name]; exists {
-				// skip repos that will be analysed in-depth
-				log.Logvf("(skipping %s; will analyse in-depth)\n", repo.Repository.Name)
-				continue
-			}
-
-			if _, exists := perRepo[repo.Repository.Name]; !exists {
-				perRepo[repo.Repository.Name] = 0
-			}
-			perRepo[repo.Repository.Name] += repo.Contributions.TotalCount
-
-			log.Logvf("  %s %s %d\n", icons.Commit, repo.Repository.Name, repo.Contributions.TotalCount)
-			totalCommits += repo.Contributions.TotalCount
-		}
+	totalCnt := 0
+	log.Logvf("Commits on default branch, per repo:\n")
+	for _, repo := range repoQuery.Viewer.Repositories.Nodes {
+		cnt := repo.DefaultBranchRef.Target.SpreadCommits.History.TotalCount
+		log.Logvf("  %s%s: %d\n", icons.Repo, repo.Name, cnt)
+		totalCnt += cnt
 	}
+	log.Logvf("\n")
 
-	if log.Verbose() {
-		log.Logvf("\nCommits per repo:\n")
-		for repo, cnt := range perRepo {
-			log.Logvf("%s %s: %d\n", icons.Commit, repo, cnt)
-		}
-		log.Logvf("\n")
-	}
-
-	totalInDepth, err := c.inDepthStats(inDepth)
-	if err != nil {
-		return 0, nil
-	}
-
-	return totalCommits + totalInDepth, nil
-}
-
-func (c *AuthenticatedGitHubContext) inDepthStats(inDepth []string) (int, error) {
-	return 0, nil
-}
-
-func sliceToMap(slice []string) map[string]struct{} {
-	m := map[string]struct{}{}
-	for _, s := range slice {
-		m[s] = struct{}{}
-	}
-
-	return m
+	return totalCnt, nil
 }
