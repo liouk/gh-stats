@@ -15,8 +15,16 @@ func NewCLIApp() *cli.App {
 		Name:  "gh-stats",
 		Usage: "Generate GitHub user stats",
 		Commands: []*cli.Command{
+			newAllCmd(),
 			newReposCmd(),
 			newCommitsCmd(),
+		},
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "verbose",
+				Aliases: []string{"v"},
+				Usage:   "display verbose information",
+			},
 		},
 	}
 }

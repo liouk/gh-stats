@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/liouk/gh-stats/pkg/github"
+	"github.com/liouk/gh-stats/pkg/icons"
+	"github.com/liouk/gh-stats/pkg/log"
 	"github.com/urfave/cli/v2"
 )
 
@@ -22,16 +22,21 @@ func newCommitsCmd() *cli.Command {
 }
 
 func cmdCommits(cCtx *cli.Context) error {
+	log.Init(cCtx)
 	gh, err := github.NewAuthenticatedGitHubContext()
 	if err != nil {
 		return err
 	}
 
-	numCommits, err := gh.NumCommits(cCtx.StringSlice("in-depth"))
+	return cmdCommitsWithGitHubContext(cCtx, gh)
+}
+
+func cmdCommitsWithGitHubContext(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext) error {
+	numCommits, err := gh.NumCommits(cCtx.StringSlice("in-depth"), cCtx.Bool("verbose"))
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("total commits:", numCommits)
+	log.Logf("%s Commits: %d\n", icons.Commit, numCommits)
 	return nil
 }

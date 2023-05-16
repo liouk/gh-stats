@@ -1,9 +1,10 @@
 package github
 
 import (
-	"fmt"
 	"time"
 
+	"github.com/liouk/gh-stats/pkg/icons"
+	"github.com/liouk/gh-stats/pkg/log"
 	"github.com/shurcooL/githubv4"
 )
 
@@ -26,7 +27,7 @@ type commitsQuery struct {
 	}
 }
 
-func (c *AuthenticatedGitHubContext) NumCommits(inDepth []string) (int, error) {
+func (c *AuthenticatedGitHubContext) NumCommits(inDepth []string, verbose bool) (int, error) {
 	var viewer struct {
 		Viewer struct {
 			CreatedAt time.Time
@@ -39,8 +40,9 @@ func (c *AuthenticatedGitHubContext) NumCommits(inDepth []string) (int, error) {
 
 	totalCommits := 0
 	inDepthRepos := sliceToMap(inDepth)
+	perRepo := map[string]int{}
 	for fromTime := viewer.Viewer.CreatedAt; fromTime.Before(time.Now()); fromTime = fromTime.AddDate(1, 0, 0) {
-		fmt.Println("FROM TIME:", fromTime)
+		log.Logvf("FROM TIME: %s\n", fromTime)
 		var commits commitsQuery
 		vars := map[string]interface{}{
 			"fromTime": githubv4.DateTime{Time: fromTime},
@@ -54,14 +56,26 @@ func (c *AuthenticatedGitHubContext) NumCommits(inDepth []string) (int, error) {
 		for _, repo := range commits.Viewer.ContributionsCollection.CommitContributionsByRepository {
 			if _, exists := inDepthRepos[repo.Repository.Name]; exists {
 				// skip repos that will be analysed in-depth
-				fmt.Printf("(skipping %s; will analyse in-depth)", repo.Repository.Name)
+				log.Logvf("(skipping %s; will analyse in-depth)\n", repo.Repository.Name)
 				continue
 			}
 
-			fmt.Println(repo.Repository.Name, repo.Contributions.TotalCount)
+			if _, exists := perRepo[repo.Repository.Name]; !exists {
+				perRepo[repo.Repository.Name] = 0
+			}
+			perRepo[repo.Repository.Name] += repo.Contributions.TotalCount
+
+			log.Logvf("  %s %s %d\n", icons.Commit, repo.Repository.Name, repo.Contributions.TotalCount)
 			totalCommits += repo.Contributions.TotalCount
 		}
+	}
 
+	if log.Verbose() {
+		log.Logvf("\nCommits per repo:\n")
+		for repo, cnt := range perRepo {
+			log.Logvf("%s %s: %d\n", icons.Commit, repo, cnt)
+		}
+		log.Logvf("\n")
 	}
 
 	totalInDepth, err := c.inDepthStats(inDepth)
