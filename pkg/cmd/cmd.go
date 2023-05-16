@@ -18,6 +18,7 @@ func NewCLIApp() *cli.App {
 			newAllCmd(),
 			newReposCmd(),
 			newCommitsCmd(),
+			newReviewsCmd(),
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{

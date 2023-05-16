@@ -25,7 +25,7 @@ func cmdCommits(cCtx *cli.Context) error {
 	return cmdCommitsWithGitHubContext(cCtx, gh)
 }
 
-func cmdCommitsWithGitHubContext(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext) error {
+func cmdCommitsWithGitHubContext(_ *cli.Context, gh *github.AuthenticatedGitHubContext) error {
 	numCommits, err := gh.NumCommits()
 	if err != nil {
 		return err

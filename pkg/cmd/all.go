@@ -29,5 +29,9 @@ func cmdAll(cCtx *cli.Context) error {
 		return err
 	}
 
+	if err := cmdReviewsWithGitHubContext(cCtx, gh); err != nil {
+		return err
+	}
+
 	return nil
 }

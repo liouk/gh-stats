@@ -10,7 +10,7 @@ import (
 func newReposCmd() *cli.Command {
 	return &cli.Command{
 		Name:   "repos",
-		Usage:  "Gets repos stats",
+		Usage:  "Gets repos stats (number of repos, forks, pulls)",
 		Action: cmdRepos,
 	}
 }
