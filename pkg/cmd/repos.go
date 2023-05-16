@@ -30,19 +30,19 @@ func cmdReposWithGitHubContext(_ *cli.Context, gh *github.AuthenticatedGitHubCon
 	if err != nil {
 		return err
 	}
-	log.Logf("%s Repos: %d\n", icons.Repo, numRepos)
+	log.Logf("%sRepos: %d\n", icons.Repo, numRepos)
 
 	numForks, err := gh.NumForks()
 	if err != nil {
 		return err
 	}
-	log.Logf("%s Forks: %d\n", icons.Fork, numForks)
+	log.Logf("%sForks: %d\n", icons.Fork, numForks)
 
 	numPulls, err := gh.NumPulls()
 	if err != nil {
 		return err
 	}
-	log.Logf("%s Pulls: %d\n", icons.Pull, numPulls)
+	log.Logf("%sPulls: %d\n", icons.Pull, numPulls)
 
 	return nil
 }
