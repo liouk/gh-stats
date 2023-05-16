@@ -16,7 +16,7 @@ func NewCLIApp() *cli.App {
 		Usage: "Generate GitHub user stats",
 		Commands: []*cli.Command{
 			newReposCmd(),
-			newContribCmd(),
+			newCommitsCmd(),
 		},
 	}
 }

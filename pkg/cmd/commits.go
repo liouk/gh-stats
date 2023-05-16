@@ -7,11 +7,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func newContribCmd() *cli.Command {
+func newCommitsCmd() *cli.Command {
 	return &cli.Command{
-		Name:   "contrib",
-		Usage:  "Gets contribution stats",
-		Action: cmdContrib,
+		Name:   "commits",
+		Usage:  "Gets commits stats",
+		Action: cmdCommits,
 		Flags: []cli.Flag{
 			&cli.StringSliceFlag{
 				Name:  "in-depth",
@@ -21,13 +21,13 @@ func newContribCmd() *cli.Command {
 	}
 }
 
-func cmdContrib(cCtx *cli.Context) error {
+func cmdCommits(cCtx *cli.Context) error {
 	gh, err := github.NewAuthenticatedGitHubContext()
 	if err != nil {
 		return err
 	}
 
-	numCommits, err := gh.ContribStats(cCtx.StringSlice("in-depth"))
+	numCommits, err := gh.NumCommits(cCtx.StringSlice("in-depth"))
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/shurcooL/githubv4"
 )
 
-type contribQuery struct {
+type commitsQuery struct {
 	Viewer struct {
 		ContributionsCollection struct {
 			CommitContributionsByRepository []struct {
@@ -26,7 +26,7 @@ type contribQuery struct {
 	}
 }
 
-func (c *AuthenticatedGitHubContext) ContribStats(inDepth []string) (int, error) {
+func (c *AuthenticatedGitHubContext) NumCommits(inDepth []string) (int, error) {
 	var viewer struct {
 		Viewer struct {
 			CreatedAt time.Time
@@ -37,21 +37,21 @@ func (c *AuthenticatedGitHubContext) ContribStats(inDepth []string) (int, error)
 		return 0, err
 	}
 
-	totalContrib := 0
+	totalCommits := 0
 	inDepthRepos := sliceToMap(inDepth)
 	for fromTime := viewer.Viewer.CreatedAt; fromTime.Before(time.Now()); fromTime = fromTime.AddDate(1, 0, 0) {
 		fmt.Println("FROM TIME:", fromTime)
-		var contrib contribQuery
+		var commits commitsQuery
 		vars := map[string]interface{}{
 			"fromTime": githubv4.DateTime{Time: fromTime},
 		}
 
-		err = c.githubClient.Query(c.ctx, &contrib, vars)
+		err = c.githubClient.Query(c.ctx, &commits, vars)
 		if err != nil {
 			return 0, err
 		}
 
-		for _, repo := range contrib.Viewer.ContributionsCollection.CommitContributionsByRepository {
+		for _, repo := range commits.Viewer.ContributionsCollection.CommitContributionsByRepository {
 			if _, exists := inDepthRepos[repo.Repository.Name]; exists {
 				// skip repos that will be analysed in-depth
 				fmt.Printf("(skipping %s; will analyse in-depth)", repo.Repository.Name)
@@ -59,7 +59,7 @@ func (c *AuthenticatedGitHubContext) ContribStats(inDepth []string) (int, error)
 			}
 
 			fmt.Println(repo.Repository.Name, repo.Contributions.TotalCount)
-			totalContrib += repo.Contributions.TotalCount
+			totalCommits += repo.Contributions.TotalCount
 		}
 
 	}
@@ -69,7 +69,7 @@ func (c *AuthenticatedGitHubContext) ContribStats(inDepth []string) (int, error)
 		return 0, nil
 	}
 
-	return totalContrib + totalInDepth, nil
+	return totalCommits + totalInDepth, nil
 }
 
 func (c *AuthenticatedGitHubContext) inDepthStats(inDepth []string) (int, error) {
