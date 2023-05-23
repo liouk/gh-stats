@@ -125,7 +125,7 @@ func writeStats(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext, stats 
 
 	var err error
 	if templateFile != "" {
-		var extras map[string]string
+		var extras map[string]interface{}
 		if templateExtras != "" {
 			extras, err = templates.BindFromFile(templateExtras)
 			if err != nil {

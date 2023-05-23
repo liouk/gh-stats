@@ -8,16 +8,16 @@ import (
 // TemplateExtras defines extra annotations
 // that can be used in the templates
 type TemplateExtras struct {
-	Extras map[string]string `json:"extras"`
+	Extras map[string]interface{} `json:"extras"`
 }
 
-func BindFromFile(file string) (map[string]string, error) {
+func BindFromFile(file string) (map[string]interface{}, error) {
 	f, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
 
-	extras := map[string]string{}
+	extras := map[string]interface{}{}
 	if err := json.Unmarshal(f, &extras); err != nil {
 		return nil, err
 	}

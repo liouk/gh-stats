@@ -1,9 +1,9 @@
 package templates
 
 import (
-	"html/template"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"github.com/liouk/gh-stats/pkg/stats"
 )
@@ -15,11 +15,11 @@ type templateContainer struct {
 	NumCommits int
 	NumReviews int
 	Languages  []*stats.Lang
-	Extras     map[string]string
+	Extras     map[string]interface{}
 	User       string
 }
 
-func Render(file, outfile, githubUsername string, stats *stats.GitHubViewerStats, extras map[string]string) error {
+func Render(file, outfile, githubUsername string, stats *stats.GitHubViewerStats, extras map[string]interface{}) error {
 	tmplName := filepath.Base(file)
 	tmpl, err := template.New(tmplName).ParseFiles(file)
 	if err != nil {
