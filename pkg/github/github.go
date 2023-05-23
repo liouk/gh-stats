@@ -34,14 +34,13 @@ func NewAuthenticatedGitHubContext() (*AuthenticatedGitHubContext, error) {
 	if err := ctx.githubClient.Query(ctx.ctx, &ctx.viewer, nil); err != nil {
 		return nil, err
 	}
-	logViewer(&ctx.viewer)
 
 	return ctx, nil
 }
 
-func logViewer(info *viewerInfo) {
+func (gh *AuthenticatedGitHubContext) LogViewer() {
 	titleStr := fmt.Sprintf("logged in as")
-	userStr := fmt.Sprintf("%s%s", icons.GitHub, info.Viewer.Login)
+	userStr := fmt.Sprintf("%s%s", icons.GitHub, gh.viewer.Viewer.Login)
 	maxLen := len(titleStr)
 	if len(userStr) > maxLen {
 		maxLen = len(userStr)

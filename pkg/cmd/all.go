@@ -3,8 +3,6 @@ package cmd
 import (
 	"os"
 
-	"github.com/liouk/gh-stats/pkg/github"
-	"github.com/liouk/gh-stats/pkg/log"
 	"github.com/liouk/gh-stats/pkg/output"
 	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
@@ -23,8 +21,7 @@ func newAllCmd() *cli.Command {
 }
 
 func cmdAll(cCtx *cli.Context) error {
-	log.Init(cCtx)
-	gh, err := github.NewAuthenticatedGitHubContext()
+	gh, err := initCmd(cCtx)
 	if err != nil {
 		return err
 	}
@@ -66,6 +63,6 @@ func cmdAll(cCtx *cli.Context) error {
 		return err
 	}
 
-	output.Print(os.Stdout, stats)
+	output.Print(os.Stdout, stats, cCtx.String("output"))
 	return nil
 }

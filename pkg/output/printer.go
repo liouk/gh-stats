@@ -1,14 +1,26 @@
 package output
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/stats"
 )
 
-func Print(writer io.Writer, stats *stats.GitHubViewerStats) {
+func Print(writer io.Writer, stats *stats.GitHubViewerStats, outputType string) error {
+	if strings.EqualFold(outputType, "json") {
+		bytes, err := json.MarshalIndent(stats, "", "  ")
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintf(writer, string(bytes))
+		return nil
+	}
+
 	if stats.RepoStats != nil {
 		fmt.Fprintf(writer, "%sRepos: %d\n", icons.Repo, stats.RepoStats.NumRepos)
 		fmt.Fprintf(writer, "%sForks: %d\n", icons.Fork, stats.RepoStats.NumForks)
@@ -29,4 +41,6 @@ func Print(writer io.Writer, stats *stats.GitHubViewerStats) {
 			fmt.Fprintf(writer, "   %s %s: %.2f%%\n", icons.LangIcons[lang.Name], lang.Name, lang.Perc)
 		}
 	}
+
+	return nil
 }

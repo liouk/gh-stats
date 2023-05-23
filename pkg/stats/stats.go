@@ -1,31 +1,31 @@
 package stats
 
 type GitHubViewerStats struct {
-	RepoStats   *GitHubRepoStats
-	CommitStats *GitHubCommitStats
-	ReviewStats *GitHubReviewStats
-	LangStats   *GitHubLangStats
+	RepoStats   *GitHubRepoStats   `json:"repoStats"`
+	CommitStats *GitHubCommitStats `json:"commitStats"`
+	ReviewStats *GitHubReviewStats `json:"reviewStats"`
+	LangStats   *GitHubLangStats   `json:"languageStats"`
 }
 
 type GitHubRepoStats struct {
-	NumRepos int
-	NumForks int
-	NumPulls int
+	NumRepos int `json:"reposTotalCount"`
+	NumForks int `json:"forksTotalCount"`
+	NumPulls int `json:"pullsTotalCount"`
 }
 
 type GitHubCommitStats struct {
-	NumCommits int
+	NumCommits int `json:"totalCount"`
 }
 
 type GitHubReviewStats struct {
-	NumReviews int
+	NumReviews int `json:"totalCount"`
 }
 
 type GitHubLangStats struct {
-	Languages []*Lang
+	Languages []*Lang `json:"languages"`
 }
 
 type Lang struct {
-	Name string
-	Perc float32
+	Name string  `json:"name"`
+	Perc float32 `json:"percent"`
 }
