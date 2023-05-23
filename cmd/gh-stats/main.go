@@ -18,7 +18,8 @@ func main() {
 		if strings.Contains(err.Error(), "Bad credentials") {
 			fmt.Printf("could not login to GitHub: %v\n", err)
 		} else {
-			panic(err)
+			fmt.Printf("error: %s\n", err.Error())
+			os.Exit(1)
 		}
 	}
 }
