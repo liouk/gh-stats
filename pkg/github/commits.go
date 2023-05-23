@@ -1,6 +1,8 @@
 package github
 
 import (
+	"time"
+
 	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/log"
 	"github.com/shurcooL/githubv4"
@@ -9,20 +11,22 @@ import (
 func (c *AuthenticatedGitHubContext) NumCommits() (int, error) {
 	var repoQuery struct {
 		Viewer struct {
-			Repositories struct {
-				Nodes []struct {
-					Name             string
-					DefaultBranchRef struct {
-						Target struct {
-							SpreadCommits struct {
-								History struct {
-									TotalCount int
-								} `graphql:"history(since: $since, author: {id: $author_id})"`
-							} `graphql:"... on Commit"`
+			ContributionsCollection struct {
+				CommitContributionsByRepository []struct {
+					Repository struct {
+						NameWithOwner    string
+						DefaultBranchRef struct {
+							Target struct {
+								SpreadCommits struct {
+									History struct {
+										TotalCount int
+									} `graphql:"history(since: $since, author: {id: $author_id})"`
+								} `graphql:"... on Commit"`
+							}
 						}
 					}
 				}
-			} `graphql:"repositories(first: 100, affiliations: OWNER)"`
+			} `graphql:"contributionsCollection(from: $from)"`
 		}
 	}
 
@@ -31,16 +35,27 @@ func (c *AuthenticatedGitHubContext) NumCommits() (int, error) {
 		"since":     githubv4.GitTimestamp{Time: c.viewer.Viewer.CreatedAt.Time},
 	}
 
-	err := c.githubClient.Query(c.ctx, &repoQuery, vars)
-	if err != nil {
-		return 0, err
+	perRepo := map[string]int{}
+	for from := c.viewer.Viewer.CreatedAt.Time; !from.After(time.Now()); from = from.AddDate(1, 0, 0) {
+		vars["from"] = githubv4.DateTime{Time: from}
+		err := c.githubClient.Query(c.ctx, &repoQuery, vars)
+		if err != nil {
+			return 0, err
+		}
+
+		total := 0
+		for _, repo := range repoQuery.Viewer.ContributionsCollection.CommitContributionsByRepository {
+			cnt := repo.Repository.DefaultBranchRef.Target.SpreadCommits.History.TotalCount
+			total += cnt
+			perRepo[repo.Repository.NameWithOwner] = cnt
+		}
+		log.Logvf("%d commits in %d repos, since %v\n", total, len(repoQuery.Viewer.ContributionsCollection.CommitContributionsByRepository), from)
 	}
 
 	totalCnt := 0
-	log.Logvf("Commits on default branch, per repo:\n")
-	for _, repo := range repoQuery.Viewer.Repositories.Nodes {
-		cnt := repo.DefaultBranchRef.Target.SpreadCommits.History.TotalCount
-		log.Logvf("  %s%s: %d\n", icons.Repo, repo.Name, cnt)
+	log.Logvf("\nTotal commits per repo:\n")
+	for name, cnt := range perRepo {
+		log.Logvf("  %s%s: %d\n", icons.Repo, name, cnt)
 		totalCnt += cnt
 	}
 	log.Logvf("\n")
