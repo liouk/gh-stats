@@ -16,9 +16,10 @@ type templateContainer struct {
 	NumReviews int
 	Languages  []*stats.Lang
 	Extras     map[string]string
+	User       string
 }
 
-func Render(file, outfile string, stats *stats.GitHubViewerStats, extras map[string]string) error {
+func Render(file, outfile, githubUsername string, stats *stats.GitHubViewerStats, extras map[string]string) error {
 	tmplName := filepath.Base(file)
 	tmpl, err := template.New(tmplName).ParseFiles(file)
 	if err != nil {
@@ -31,6 +32,7 @@ func Render(file, outfile string, stats *stats.GitHubViewerStats, extras map[str
 	}
 
 	values := templateContainer{
+		User:       githubUsername,
 		NumRepos:   stats.RepoStats.NumRepos,
 		NumForks:   stats.RepoStats.NumForks,
 		NumPulls:   stats.RepoStats.NumPulls,

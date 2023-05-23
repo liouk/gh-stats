@@ -38,6 +38,10 @@ func NewAuthenticatedGitHubContext() (*AuthenticatedGitHubContext, error) {
 	return ctx, nil
 }
 
+func (gh *AuthenticatedGitHubContext) ViewerUsername() string {
+	return string(gh.viewer.Viewer.Login)
+}
+
 func (gh *AuthenticatedGitHubContext) LogViewer() {
 	titleStr := fmt.Sprintf("logged in as")
 	userStr := fmt.Sprintf("%s%s", icons.GitHub, gh.viewer.Viewer.Login)

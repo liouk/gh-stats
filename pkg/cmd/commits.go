@@ -26,5 +26,5 @@ func cmdCommits(cCtx *cli.Context) error {
 		return err
 	}
 
-	return writeStats(cCtx, stats)
+	return writeStats(cCtx, gh, stats)
 }

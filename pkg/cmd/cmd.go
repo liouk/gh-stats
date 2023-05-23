@@ -118,7 +118,7 @@ func validateTemplateFlagValue(value string) error {
 	return err
 }
 
-func writeStats(cCtx *cli.Context, stats *stats.GitHubViewerStats) error {
+func writeStats(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext, stats *stats.GitHubViewerStats) error {
 	templateFile := cCtx.String("template")
 	templateExtras := cCtx.String("template-extras")
 	out := cCtx.String("output")
@@ -133,7 +133,7 @@ func writeStats(cCtx *cli.Context, stats *stats.GitHubViewerStats) error {
 			}
 		}
 
-		err = templates.Render(templateFile, out, stats, extras)
+		err = templates.Render(templateFile, out, gh.ViewerUsername(), stats, extras)
 	} else {
 		err = output.Print(os.Stdout, stats, out)
 	}
