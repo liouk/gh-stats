@@ -52,7 +52,7 @@ func cmdLangWithGitHubContext(cCtx *cli.Context, gh *github.AuthenticatedGitHubC
 
 	log.Logf("%sLanguage stats:\n", icons.Code)
 	for _, lang := range langStats {
-		log.Logf("  %s: %.2f%%\n", lang.Name, lang.Perc)
+		log.Logf("   %s %s: %.2f%%\n", icons.LangIcons[lang.Name], lang.Name, lang.Perc)
 	}
 	return nil
 }
