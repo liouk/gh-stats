@@ -33,5 +33,9 @@ func cmdAll(cCtx *cli.Context) error {
 		return err
 	}
 
+	if err := cmdLangWithGitHubContext(cCtx, gh); err != nil {
+		return err
+	}
+
 	return nil
 }
