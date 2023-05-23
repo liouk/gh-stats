@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/liouk/gh-stats/pkg/github"
-	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/log"
+	"github.com/liouk/gh-stats/pkg/output"
+	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,15 +26,12 @@ func cmdReviews(cCtx *cli.Context) error {
 		return err
 	}
 
-	return cmdReviewsWithGitHubContext(cCtx, gh)
-}
-
-func cmdReviewsWithGitHubContext(_ *cli.Context, gh *github.AuthenticatedGitHubContext) error {
-	numReviews, err := gh.NumReviews()
+	stats := &stats.GitHubViewerStats{ReviewStats: &stats.GitHubReviewStats{}}
+	stats.ReviewStats.NumReviews, err = gh.NumReviews()
 	if err != nil {
 		return err
 	}
 
-	log.Logf("%sReviews: %d\n", icons.Review, numReviews)
+	output.Print(os.Stdout, stats)
 	return nil
 }

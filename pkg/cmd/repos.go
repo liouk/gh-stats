@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/liouk/gh-stats/pkg/github"
-	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/log"
+	"github.com/liouk/gh-stats/pkg/output"
+	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,27 +26,22 @@ func cmdRepos(cCtx *cli.Context) error {
 		return err
 	}
 
-	return cmdReposWithGitHubContext(cCtx, gh)
-}
-
-func cmdReposWithGitHubContext(_ *cli.Context, gh *github.AuthenticatedGitHubContext) error {
-	numRepos, err := gh.NumRepos()
+	stats := &stats.GitHubViewerStats{RepoStats: &stats.GitHubRepoStats{}}
+	stats.RepoStats.NumRepos, err = gh.NumRepos()
 	if err != nil {
 		return err
 	}
-	log.Logf("%sRepos: %d\n", icons.Repo, numRepos)
 
-	numForks, err := gh.NumForks()
+	stats.RepoStats.NumForks, err = gh.NumForks()
 	if err != nil {
 		return err
 	}
-	log.Logf("%sForks: %d\n", icons.Fork, numForks)
 
-	numPulls, err := gh.NumPulls()
+	stats.RepoStats.NumPulls, err = gh.NumPulls()
 	if err != nil {
 		return err
 	}
-	log.Logf("%sPulls: %d\n", icons.Pull, numPulls)
 
+	output.Print(os.Stdout, stats)
 	return nil
 }

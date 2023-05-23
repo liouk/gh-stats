@@ -6,16 +6,12 @@ import (
 
 	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/log"
+	"github.com/liouk/gh-stats/pkg/stats"
 )
 
 type set map[string]struct{}
 
-type Lang struct {
-	Name string
-	Perc float32
-}
-
-func (c *AuthenticatedGitHubContext) LangStats(maxNum int, ignore []string) ([]*Lang, error) {
+func (c *AuthenticatedGitHubContext) LangStats(maxNum int, ignore []string) ([]*stats.Lang, error) {
 	var langQuery struct {
 		Viewer struct {
 			Repositories struct {
@@ -61,9 +57,9 @@ func (c *AuthenticatedGitHubContext) LangStats(maxNum int, ignore []string) ([]*
 		}
 	}
 
-	lang := make([]*Lang, 0)
+	lang := make([]*stats.Lang, 0)
 	for k, v := range bytes {
-		lang = append(lang, &Lang{k, 100.0 * float32(v) / float32(totalBytes)})
+		lang = append(lang, &stats.Lang{Name: k, Perc: 100.0 * float32(v) / float32(totalBytes)})
 	}
 
 	lim := len(lang)

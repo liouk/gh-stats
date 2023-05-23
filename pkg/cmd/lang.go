@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/liouk/gh-stats/pkg/github"
-	"github.com/liouk/gh-stats/pkg/icons"
 	"github.com/liouk/gh-stats/pkg/log"
+	"github.com/liouk/gh-stats/pkg/output"
+	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
@@ -41,18 +44,12 @@ func cmdLang(cCtx *cli.Context) error {
 		return err
 	}
 
-	return cmdLangWithGitHubContext(cCtx, gh)
-}
-
-func cmdLangWithGitHubContext(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext) error {
-	langStats, err := gh.LangStats(cCtx.Int("num"), cCtx.StringSlice("ignore"))
+	stats := &stats.GitHubViewerStats{LangStats: &stats.GitHubLangStats{}}
+	stats.LangStats.Languages, err = gh.LangStats(cCtx.Int("num"), cCtx.StringSlice("ignore"))
 	if err != nil {
 		return err
 	}
 
-	log.Logf("%sLanguage stats:\n", icons.Code)
-	for _, lang := range langStats {
-		log.Logf("   %s %s: %.2f%%\n", icons.LangIcons[lang.Name], lang.Name, lang.Perc)
-	}
+	output.Print(os.Stdout, stats)
 	return nil
 }
