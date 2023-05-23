@@ -40,18 +40,28 @@ func initCmd(cCtx *cli.Context) (*github.AuthenticatedGitHubContext, error) {
 		return nil, err
 	}
 
-	outputType := cCtx.String("output")
-	if err := validateOutputFlagValue(outputType); err != nil {
-		return nil, err
-	}
-
 	template := cCtx.String("template")
+	outputType := cCtx.String("output")
+
 	if err := validateTemplateFlagValue(template); err != nil {
 		return nil, err
 	}
 
-	if strings.EqualFold(outputType, "stdout") && template == "" {
-		gh.LogViewer()
+	if template != "" {
+		if outputType == "stdout" {
+			return nil, fmt.Errorf("template output file required; use --output to specify")
+		}
+
+	} else {
+		// validate the output flag only if --template wasn't used
+		// if it was used, it will contain the output file name
+		if err := validateOutputFlagValue(outputType); err != nil {
+			return nil, err
+		}
+
+		if strings.EqualFold(outputType, "stdout") {
+			gh.LogViewer()
+		}
 	}
 
 	return gh, nil
@@ -68,13 +78,13 @@ func flags(flags ...cli.Flag) []cli.Flag {
 		&cli.StringFlag{
 			Name:    "output",
 			Aliases: []string{"o"},
-			Usage:   "choose output type (ignored if --template is also present); values: stdout, json",
+			Usage:   "choose output type between 'stdout', 'json'; if --template is also used, give the filename to write the rendered stats to",
 			Value:   "stdout",
 		},
 		&cli.StringFlag{
 			Name:    "template",
 			Aliases: []string{"t"},
-			Usage:   "render a template with stats (takes precedence over --output)",
+			Usage:   "render a template with stats and write it to a file; use --output to specify the filename",
 		},
 	}
 
@@ -91,6 +101,10 @@ func validateOutputFlagValue(value string) error {
 }
 
 func validateTemplateFlagValue(value string) error {
+	if value == "" {
+		return nil
+	}
+
 	_, err := os.Stat(value)
 	return err
 }
@@ -98,10 +112,11 @@ func validateTemplateFlagValue(value string) error {
 func writeStats(cCtx *cli.Context, stats *stats.GitHubViewerStats) error {
 	var err error
 	templateFile := cCtx.String("template")
+	out := cCtx.String("output")
 	if templateFile != "" {
-		err = templates.Render(templateFile, stats)
+		err = templates.Render(templateFile, out, stats)
 	} else {
-		err = output.Print(os.Stdout, stats, cCtx.String("output"))
+		err = output.Print(os.Stdout, stats, out)
 	}
 
 	return err
