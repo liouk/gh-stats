@@ -12,6 +12,7 @@ func newCommitsCmd() *cli.Command {
 		Name:   "commits",
 		Usage:  "Gets commits stats",
 		Action: cmdCommits,
+		Flags:  flags(),
 	}
 }
 

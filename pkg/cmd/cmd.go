@@ -21,12 +21,18 @@ func NewCLIApp() *cli.App {
 			newReviewsCmd(),
 			newLangCmd(),
 		},
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "verbose",
-				Aliases: []string{"v"},
-				Usage:   "display verbose information",
-			},
+	}
+}
+
+// to be used in each command to avoid inconvenient urfave/cli positioning
+func flags(flags ...cli.Flag) []cli.Flag {
+	baseFlags := []cli.Flag{
+		&cli.BoolFlag{
+			Name:    "verbose",
+			Aliases: []string{"v"},
+			Usage:   "display verbose information",
 		},
 	}
+
+	return append(baseFlags, flags...)
 }

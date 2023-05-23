@@ -12,6 +12,7 @@ func newReposCmd() *cli.Command {
 		Name:   "repos",
 		Usage:  "Gets repos stats (number of repos, forks, pulls)",
 		Action: cmdRepos,
+		Flags:  flags(),
 	}
 }
 

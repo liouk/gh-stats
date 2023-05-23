@@ -11,6 +11,10 @@ func newAllCmd() *cli.Command {
 		Name:   "all",
 		Usage:  "Gets all stats (repos, commits, reviews)",
 		Action: cmdAll,
+		Flags: flags(
+			flagLangNum,
+			flagLangIgnore,
+		),
 	}
 }
 

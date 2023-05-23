@@ -7,24 +7,30 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	flagLangNum = &cli.IntFlag{
+		Name:    "num",
+		Aliases: []string{"n"},
+		Usage:   "number of languages to return stats for",
+		Value:   5,
+	}
+
+	flagLangIgnore = &cli.StringSliceFlag{
+		Name:    "ignore",
+		Aliases: []string{"i"},
+		Usage:   "list of languages to ignore (case-insensitive)",
+	}
+)
+
 func newLangCmd() *cli.Command {
 	return &cli.Command{
 		Name:   "lang",
 		Usage:  "Gets language stats",
 		Action: cmdLang,
-		Flags: []cli.Flag{
-			&cli.IntFlag{
-				Name:    "num",
-				Aliases: []string{"n"},
-				Usage:   "number of languages to return stats for",
-				Value:   5,
-			},
-			&cli.StringSliceFlag{
-				Name:    "ignore",
-				Aliases: []string{"i"},
-				Usage:   "list of languages to ignore (case-insensitive)",
-			},
-		},
+		Flags: flags(
+			flagLangNum,
+			flagLangIgnore,
+		),
 	}
 }
 

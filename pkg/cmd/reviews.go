@@ -12,6 +12,7 @@ func newReviewsCmd() *cli.Command {
 		Name:   "reviews",
 		Usage:  "Gets reviews stats",
 		Action: cmdReviews,
+		Flags:  flags(),
 	}
 }
 
