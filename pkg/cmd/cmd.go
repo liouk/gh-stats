@@ -41,15 +41,19 @@ func initCmd(cCtx *cli.Context) (*github.AuthenticatedGitHubContext, error) {
 	}
 
 	template := cCtx.String("template")
+	templateExtras := cCtx.String("template-extras")
 	outputType := cCtx.String("output")
-
-	if err := validateTemplateFlagValue(template); err != nil {
-		return nil, err
-	}
-
 	if template != "" {
 		if outputType == "stdout" {
 			return nil, fmt.Errorf("template output file required; use --output to specify")
+		}
+
+		if err := validateTemplateFlagValue(template); err != nil {
+			return nil, err
+		}
+
+		if err := validateTemplateFlagValue(templateExtras); err != nil {
+			return nil, err
 		}
 
 	} else {
@@ -86,6 +90,11 @@ func flags(flags ...cli.Flag) []cli.Flag {
 			Aliases: []string{"t"},
 			Usage:   "render a template with stats and write it to a file; use --output to specify the filename",
 		},
+		&cli.StringFlag{
+			Name:    "template-extras",
+			Aliases: []string{"x"},
+			Usage:   "define a json file containing extra template annotations (extra0 ... extra9)",
+		},
 	}
 
 	return append(baseFlags, flags...)
@@ -110,11 +119,21 @@ func validateTemplateFlagValue(value string) error {
 }
 
 func writeStats(cCtx *cli.Context, stats *stats.GitHubViewerStats) error {
-	var err error
 	templateFile := cCtx.String("template")
+	templateExtras := cCtx.String("template-extras")
 	out := cCtx.String("output")
+
+	var err error
 	if templateFile != "" {
-		err = templates.Render(templateFile, out, stats)
+		var extras map[string]string
+		if templateExtras != "" {
+			extras, err = templates.BindFromFile(templateExtras)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = templates.Render(templateFile, out, stats, extras)
 	} else {
 		err = output.Print(os.Stdout, stats, out)
 	}
