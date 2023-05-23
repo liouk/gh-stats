@@ -2,10 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/liouk/gh-stats/pkg/github"
 	"github.com/liouk/gh-stats/pkg/log"
+	"github.com/liouk/gh-stats/pkg/output"
+	"github.com/liouk/gh-stats/pkg/stats"
+	"github.com/liouk/gh-stats/pkg/templates"
 	"github.com/urfave/cli/v2"
 )
 
@@ -41,7 +45,12 @@ func initCmd(cCtx *cli.Context) (*github.AuthenticatedGitHubContext, error) {
 		return nil, err
 	}
 
-	if strings.EqualFold(outputType, "stdout") {
+	template := cCtx.String("template")
+	if err := validateTemplateFlagValue(template); err != nil {
+		return nil, err
+	}
+
+	if strings.EqualFold(outputType, "stdout") && template == "" {
 		gh.LogViewer()
 	}
 
@@ -59,8 +68,13 @@ func flags(flags ...cli.Flag) []cli.Flag {
 		&cli.StringFlag{
 			Name:    "output",
 			Aliases: []string{"o"},
-			Usage:   "choose output type; values: stdout, json",
+			Usage:   "choose output type (ignored if --template is also present); values: stdout, json",
 			Value:   "stdout",
+		},
+		&cli.StringFlag{
+			Name:    "template",
+			Aliases: []string{"t"},
+			Usage:   "render a template with stats (takes precedence over --output)",
 		},
 	}
 
@@ -74,4 +88,21 @@ func validateOutputFlagValue(value string) error {
 	}
 
 	return fmt.Errorf("unsupported output type: %s", value)
+}
+
+func validateTemplateFlagValue(value string) error {
+	_, err := os.Stat(value)
+	return err
+}
+
+func writeStats(cCtx *cli.Context, stats *stats.GitHubViewerStats) error {
+	var err error
+	templateFile := cCtx.String("template")
+	if templateFile != "" {
+		err = templates.Render(templateFile, stats)
+	} else {
+		err = output.Print(os.Stdout, stats, cCtx.String("output"))
+	}
+
+	return err
 }

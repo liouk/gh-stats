@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"os"
-
-	"github.com/liouk/gh-stats/pkg/output"
 	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
@@ -39,6 +36,5 @@ func cmdRepos(cCtx *cli.Context) error {
 		return err
 	}
 
-	output.Print(os.Stdout, stats, cCtx.String("output"))
-	return nil
+	return writeStats(cCtx, stats)
 }
