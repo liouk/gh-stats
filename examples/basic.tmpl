@@ -27,3 +27,5 @@ You can render extra annotations taken from a json file, like for example the fo
 | --- | ----- |
 | `key1` | {{index .Extras "key1"}} |
 | `key2` | {{index .Extras "key2"}} |
+
+An extra can have a nested object too! The value of the nested object is: '{{index (index .Extras "object") "value"}}'.

@@ -29,3 +29,5 @@ You can render extra annotations taken from a json file, like for example the fo
 | --- | ----- |
 | `key1` | Key #1 |
 | `key2` | Key #2 |
+
+An extra can have a nested object too! The value of the nested object is: 'a nested value'.

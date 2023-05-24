@@ -1,4 +1,7 @@
 {
   "key1": "Key #1",
-  "key2": "Key #2"
+  "key2": "Key #2",
+  "object": {
+    "value": "a nested value"
+  }
 }
