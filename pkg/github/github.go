@@ -2,8 +2,6 @@ package github
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/liouk/gh-stats/pkg/auth"
 	"github.com/liouk/gh-stats/pkg/icons"
@@ -47,14 +45,6 @@ func (gh *AuthenticatedGitHubContext) LogViewer(withIcons bool) {
 	if withIcons {
 		icon = icons.GitHub
 	}
-	titleStr := fmt.Sprintf("logged in as")
-	userStr := fmt.Sprintf("%s%s", icon, gh.viewer.Viewer.Login)
-	maxLen := len(titleStr)
-	if len(userStr) > maxLen {
-		maxLen = len(userStr)
-	}
 
-	sep := strings.Repeat("~", maxLen+4)
-
-	log.Logf("%s\n  %s\n  %s\n%s\n\n", sep, titleStr, userStr, sep)
+	log.Logf("logged in as %s%s\n", icon, gh.viewer.Viewer.Login)
 }

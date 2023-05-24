@@ -75,7 +75,6 @@ Each element is an object with two fields:
 - `{{ .Perc }}`: the percentage of total bytes written, that are written in this language
 
 #### Extras
-:warning: TODO
 
 #### Examples
 The [examples/](https://github.com/liouk/gh-stats/tree/main/examples) dir of this repo contains an example template file, an example extras JSON file and the resulting markdown file, rendered with the following command:

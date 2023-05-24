@@ -62,10 +62,10 @@ func initCmd(cCtx *cli.Context) (*github.AuthenticatedGitHubContext, error) {
 		if err := validateOutputFlagValue(outputType); err != nil {
 			return nil, err
 		}
+	}
 
-		if strings.EqualFold(outputType, "stdout") {
-			gh.LogViewer(!cCtx.Bool("no-icons"))
-		}
+	if !strings.EqualFold(outputType, "json") {
+		gh.LogViewer(!cCtx.Bool("no-icons"))
 	}
 
 	return gh, nil
@@ -138,6 +138,10 @@ func writeStats(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext, stats 
 		}
 
 		err = templates.Render(templateFile, out, gh.ViewerUsername(), stats, extras)
+		if err == nil {
+			log.Logf("rendered template written to file: %s\n", out)
+		}
+
 	} else {
 		err = output.Print(os.Stdout, stats, out, !cCtx.Bool("no-icons"))
 	}
