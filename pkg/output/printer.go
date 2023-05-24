@@ -24,7 +24,13 @@ func Print(writer io.Writer, stats *stats.GitHubViewerStats, outputType string) 
 	if stats.RepoStats != nil {
 		fmt.Fprintf(writer, "%sRepos: %d\n", icons.Repo, stats.RepoStats.NumRepos)
 		fmt.Fprintf(writer, "%sForks: %d\n", icons.Fork, stats.RepoStats.NumForks)
-		fmt.Fprintf(writer, "%sPulls: %d\n", icons.Pull, stats.RepoStats.NumPulls)
+		fmt.Fprintf(writer, "%sPulls: %d (%d open; %d closed; %d merged)\n",
+			icons.Pull,
+			stats.PullStats.TotalCount,
+			stats.PullStats.OpenCount,
+			stats.PullStats.ClosedCount,
+			stats.PullStats.MergedCount,
+		)
 	}
 
 	if stats.CommitStats != nil {

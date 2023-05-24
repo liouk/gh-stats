@@ -2,6 +2,7 @@ package stats
 
 type GitHubViewerStats struct {
 	RepoStats   *GitHubRepoStats   `json:"repoStats"`
+	PullStats   *GitHubPullStats   `json:"pullStats"`
 	CommitStats *GitHubCommitStats `json:"commitStats"`
 	ReviewStats *GitHubReviewStats `json:"reviewStats"`
 	LangStats   *GitHubLangStats   `json:"languageStats"`
@@ -10,7 +11,13 @@ type GitHubViewerStats struct {
 type GitHubRepoStats struct {
 	NumRepos int `json:"reposTotalCount"`
 	NumForks int `json:"forksTotalCount"`
-	NumPulls int `json:"pullsTotalCount"`
+}
+
+type GitHubPullStats struct {
+	TotalCount  int
+	OpenCount   int
+	ClosedCount int
+	MergedCount int
 }
 
 type GitHubCommitStats struct {

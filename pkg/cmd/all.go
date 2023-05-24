@@ -40,7 +40,7 @@ func cmdAll(cCtx *cli.Context) error {
 		return err
 	}
 
-	stats.RepoStats.NumPulls, err = gh.NumPulls()
+	stats.PullStats, err = gh.NumPulls()
 	if err != nil {
 		return err
 	}
