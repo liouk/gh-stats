@@ -8,7 +8,7 @@ import (
 func newAllCmd() *cli.Command {
 	return &cli.Command{
 		Name:   "all",
-		Usage:  "Gets all stats (repos, commits, reviews)",
+		Usage:  "Gets all stats (repos, forks, pulls, commits, reviews, languages)",
 		Action: cmdAll,
 		Flags: flags(
 			flagLangNum,
