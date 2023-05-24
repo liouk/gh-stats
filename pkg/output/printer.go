@@ -10,7 +10,7 @@ import (
 	"github.com/liouk/gh-stats/pkg/stats"
 )
 
-func Print(writer io.Writer, stats *stats.GitHubViewerStats, outputType string) error {
+func Print(writer io.Writer, stats *stats.GitHubViewerStats, outputType string, withIcons bool) error {
 	if strings.EqualFold(outputType, "json") {
 		bytes, err := json.MarshalIndent(stats, "", "  ")
 		if err != nil {
@@ -21,11 +21,23 @@ func Print(writer io.Writer, stats *stats.GitHubViewerStats, outputType string) 
 		return nil
 	}
 
+	var iconRepo, iconFork, iconPull, iconCommit, iconReview, iconCode string
+	var langIcons map[string]string
+	if withIcons {
+		iconRepo = icons.Repo
+		iconFork = icons.Fork
+		iconPull = icons.Pull
+		iconCommit = icons.Commit
+		iconReview = icons.Review
+		iconCode = icons.Code
+		langIcons = icons.LangIcons
+	}
+
 	if stats.RepoStats != nil {
-		fmt.Fprintf(writer, "%sRepos: %d\n", icons.Repo, stats.RepoStats.NumRepos)
-		fmt.Fprintf(writer, "%sForks: %d\n", icons.Fork, stats.RepoStats.NumForks)
+		fmt.Fprintf(writer, "%sRepos: %d\n", iconRepo, stats.RepoStats.NumRepos)
+		fmt.Fprintf(writer, "%sForks: %d\n", iconFork, stats.RepoStats.NumForks)
 		fmt.Fprintf(writer, "%sPulls: %d (%d open; %d closed; %d merged)\n",
-			icons.Pull,
+			iconPull,
 			stats.PullStats.TotalCount,
 			stats.PullStats.OpenCount,
 			stats.PullStats.ClosedCount,
@@ -34,17 +46,17 @@ func Print(writer io.Writer, stats *stats.GitHubViewerStats, outputType string) 
 	}
 
 	if stats.CommitStats != nil {
-		fmt.Fprintf(writer, "%sCommits: %d\n", icons.Commit, stats.CommitStats.NumCommits)
+		fmt.Fprintf(writer, "%sCommits: %d\n", iconCommit, stats.CommitStats.NumCommits)
 	}
 
 	if stats.ReviewStats != nil {
-		fmt.Fprintf(writer, "%sReviews: %d\n", icons.Review, stats.ReviewStats.NumReviews)
+		fmt.Fprintf(writer, "%sReviews: %d\n", iconReview, stats.ReviewStats.NumReviews)
 	}
 
 	if stats.LangStats != nil {
-		fmt.Fprintf(writer, "%sLanguage stats:\n", icons.Code)
+		fmt.Fprintf(writer, "%sLanguage stats:\n", iconCode)
 		for _, lang := range stats.LangStats.Languages {
-			fmt.Fprintf(writer, "   %s %s: %.2f%%\n", icons.LangIcons[lang.Name], lang.Name, lang.Perc)
+			fmt.Fprintf(writer, "   %s%s: %.2f%%\n", langIcons[lang.Name], lang.Name, lang.Perc)
 		}
 	}
 

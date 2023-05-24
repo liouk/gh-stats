@@ -64,7 +64,7 @@ func initCmd(cCtx *cli.Context) (*github.AuthenticatedGitHubContext, error) {
 		}
 
 		if strings.EqualFold(outputType, "stdout") {
-			gh.LogViewer()
+			gh.LogViewer(!cCtx.Bool("no-icons"))
 		}
 	}
 
@@ -94,6 +94,10 @@ func flags(flags ...cli.Flag) []cli.Flag {
 			Name:    "template-extras",
 			Aliases: []string{"x"},
 			Usage:   "define a json file containing extra template annotations (extra0 ... extra9)",
+		},
+		&cli.BoolFlag{
+			Name:  "no-icons",
+			Usage: "do not display any icons when --output is set to 'stdout'",
 		},
 	}
 
@@ -135,7 +139,7 @@ func writeStats(cCtx *cli.Context, gh *github.AuthenticatedGitHubContext, stats 
 
 		err = templates.Render(templateFile, out, gh.ViewerUsername(), stats, extras)
 	} else {
-		err = output.Print(os.Stdout, stats, out)
+		err = output.Print(os.Stdout, stats, out, !cCtx.Bool("no-icons"))
 	}
 
 	return err

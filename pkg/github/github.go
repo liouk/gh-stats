@@ -42,9 +42,13 @@ func (gh *AuthenticatedGitHubContext) ViewerUsername() string {
 	return string(gh.viewer.Viewer.Login)
 }
 
-func (gh *AuthenticatedGitHubContext) LogViewer() {
+func (gh *AuthenticatedGitHubContext) LogViewer(withIcons bool) {
+	var icon string
+	if withIcons {
+		icon = icons.GitHub
+	}
 	titleStr := fmt.Sprintf("logged in as")
-	userStr := fmt.Sprintf("%s%s", icons.GitHub, gh.viewer.Viewer.Login)
+	userStr := fmt.Sprintf("%s%s", icon, gh.viewer.Viewer.Login)
 	maxLen := len(titleStr)
 	if len(userStr) > maxLen {
 		maxLen = len(userStr)
