@@ -75,6 +75,26 @@ Each element is an object with two fields:
 - `{{ .Perc }}`: the percentage of total bytes written, that are written in this language
 
 #### Extras
+The `{{ .Extras }}` field is a map that can hold arbitrary values that can be added to the templates. The contents of the map can be accessed in a template using the [index template function](https://pkg.go.dev/text/template#hdr-Functions).
+
+To use the Extras field:
+- define the required values in a JSON file
+- use the `index` function to render the values, as per the JSON structure
+- pass the JSON file to `gh-stats` using the `--template-extras` option
+
+For example, define the following JSON file:
+```json
+{
+  "repo": "gh-stats"
+}
+```
+
+Then render the extra field in a template:
+```
+The name of this repo is: {{index .Extras "repo"}}
+```
+
+For a more detailed example, see the next section.
 
 #### Examples
 The [examples/](https://github.com/liouk/gh-stats/tree/main/examples) dir of this repo contains an example template file, an example extras JSON file and the resulting markdown file, rendered with the following command:
