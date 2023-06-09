@@ -32,22 +32,18 @@ $ gh-stats all
 Once you've set your GitHub token to the env var, invoke the tool to obtain stats (omit `--no-icons` if you have a nerd font installed, for some fancy icons):
 ```
 $ gh-stats all --no-icons
-~~~~~~~~~~~~~~~~
-  logged in as
-  liouk
-~~~~~~~~~~~~~~~~
-
-Repos: 7
-Forks: 13
-Pulls: 16 (8 open; 0 closed; 8 merged)
-Commits: 678
-Reviews: 5
+logged in as liouk
+Repos: 8
+Forks: 14
+Pulls: 17 (6 open; 1 closed; 10 merged)
+Commits: 696
+Reviews: 7
 Language stats:
-   Shell: 75.01%
-   Lua: 13.93%
-   Go: 3.75%
-   Python: 3.39%
-   Ruby: 2.59%
+   Shell: 77.87%
+   Lua: 12.29%
+   Go: 3.40%
+   Python: 2.98%
+   Ruby: 2.28%
 ```
 Have a look at `gh-stats help` for a list of available commands and options.
 
