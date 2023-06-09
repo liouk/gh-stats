@@ -24,7 +24,8 @@ go install github.com/liouk/gh-stats/cmd/gh-stats
 In order to use `gh-stats` you need to authenticate to GitHub via OAuth2 using a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). The tool reads the token from the environment variable `GITHUB_TOKEN`, so for example you can export it before using the tool:
 
 ```bash
-$ export GITHUB_TOKEN="your token"
+# paste token from the clipboard into the env var and export it
+$ export GITHUB_TOKEN=$(wl-paste)
 $ gh-stats all
 ```
 
