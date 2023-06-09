@@ -30,7 +30,7 @@ $ gh-stats all
 ```
 
 ### Basic usage
-Once you've set your GitHub token to the env var, invoke the tool to obtain stats (omit `--no-icons` if you have a nerd font installed, for some fancy icons):
+Once you've set your GitHub token to the env var, invoke the tool to obtain stats (omit `--no-icons` if you have a nerd font installed, for some fancy icons). Note that the stats generated are for the authenticated user.
 ```
 $ gh-stats all --no-icons
 logged in as liouk
