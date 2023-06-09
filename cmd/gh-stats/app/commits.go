@@ -1,20 +1,18 @@
-package cmd
+package app
 
 import (
 	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
-func newCommitsCmd() *cli.Command {
-	return &cli.Command{
-		Name:   "commits",
-		Usage:  "Gets commits stats",
-		Action: cmdCommits,
-		Flags:  flags(),
-	}
+var cmdCommits = &cli.Command{
+	Name:   "commits",
+	Usage:  "Gets commits stats",
+	Action: runCommits,
+	Flags:  flags(),
 }
 
-func cmdCommits(cCtx *cli.Context) error {
+func runCommits(cCtx *cli.Context) error {
 	gh, err := initCmd(cCtx)
 	if err != nil {
 		return err

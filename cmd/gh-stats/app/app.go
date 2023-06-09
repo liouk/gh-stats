@@ -1,4 +1,4 @@
-package cmd
+package app
 
 import (
 	"fmt"
@@ -24,11 +24,11 @@ func NewCLIApp() *cli.App {
 		Name:  "gh-stats",
 		Usage: "Generate GitHub user stats",
 		Commands: []*cli.Command{
-			newAllCmd(),
-			newReposCmd(),
-			newCommitsCmd(),
-			newReviewsCmd(),
-			newLangCmd(),
+			cmdAll,
+			cmdRepos,
+			cmdCommits,
+			cmdReviews,
+			cmdLang,
 		},
 	}
 }

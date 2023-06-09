@@ -1,20 +1,18 @@
-package cmd
+package app
 
 import (
 	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
-func newReviewsCmd() *cli.Command {
-	return &cli.Command{
-		Name:   "reviews",
-		Usage:  "Gets reviews stats",
-		Action: cmdReviews,
-		Flags:  flags(),
-	}
+var cmdReviews = &cli.Command{
+	Name:   "reviews",
+	Usage:  "Gets reviews stats",
+	Action: runReviews,
+	Flags:  flags(),
 }
 
-func cmdReviews(cCtx *cli.Context) error {
+func runReviews(cCtx *cli.Context) error {
 	gh, err := initCmd(cCtx)
 	if err != nil {
 		return err

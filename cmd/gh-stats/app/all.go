@@ -1,23 +1,21 @@
-package cmd
+package app
 
 import (
 	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
-func newAllCmd() *cli.Command {
-	return &cli.Command{
-		Name:   "all",
-		Usage:  "Gets all stats (repos, forks, pulls, commits, reviews, languages)",
-		Action: cmdAll,
-		Flags: flags(
-			flagLangNum,
-			flagLangIgnore,
-		),
-	}
+var cmdAll = &cli.Command{
+	Name:   "all",
+	Usage:  "Gets all stats (repos, forks, pulls, commits, reviews, languages)",
+	Action: runAll,
+	Flags: flags(
+		flagLangNum,
+		flagLangIgnore,
+	),
 }
 
-func cmdAll(cCtx *cli.Context) error {
+func runAll(cCtx *cli.Context) error {
 	gh, err := initCmd(cCtx)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package cmd
+package app
 
 import (
 	"github.com/liouk/gh-stats/pkg/stats"
@@ -18,21 +18,19 @@ var (
 		Aliases: []string{"i"},
 		Usage:   "list of languages to ignore (case-insensitive)",
 	}
-)
 
-func newLangCmd() *cli.Command {
-	return &cli.Command{
+	cmdLang = &cli.Command{
 		Name:   "lang",
 		Usage:  "Gets language stats",
-		Action: cmdLang,
+		Action: runLang,
 		Flags: flags(
 			flagLangNum,
 			flagLangIgnore,
 		),
 	}
-}
+)
 
-func cmdLang(cCtx *cli.Context) error {
+func runLang(cCtx *cli.Context) error {
 	gh, err := initCmd(cCtx)
 	if err != nil {
 		return err

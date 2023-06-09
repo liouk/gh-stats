@@ -1,20 +1,18 @@
-package cmd
+package app
 
 import (
 	"github.com/liouk/gh-stats/pkg/stats"
 	"github.com/urfave/cli/v2"
 )
 
-func newReposCmd() *cli.Command {
-	return &cli.Command{
-		Name:   "repos",
-		Usage:  "Gets repos stats (number of repos, forks, pulls)",
-		Action: cmdRepos,
-		Flags:  flags(),
-	}
+var cmdRepos = &cli.Command{
+	Name:   "repos",
+	Usage:  "Gets repos stats (number of repos, forks, pulls)",
+	Action: runRepos,
+	Flags:  flags(),
 }
 
-func cmdRepos(cCtx *cli.Context) error {
+func runRepos(cCtx *cli.Context) error {
 	gh, err := initCmd(cCtx)
 	if err != nil {
 		return err

@@ -5,21 +5,19 @@ import (
 	"os"
 	"strings"
 
-	"github.com/liouk/gh-stats/pkg/cmd"
+	"github.com/liouk/gh-stats/cmd/gh-stats/app"
 )
 
 func main() {
-	app := cmd.NewCLIApp()
-	if app == nil {
-		panic("could not create CLI app")
-	}
+	err := app.NewCLIApp().Run(os.Args)
 
-	if err := app.Run(os.Args); err != nil {
+	if err != nil {
 		if strings.Contains(err.Error(), "Bad credentials") {
 			fmt.Printf("could not login to GitHub: %v\n", err)
-		} else {
-			fmt.Printf("error: %s\n", err.Error())
 			os.Exit(1)
 		}
+
+		fmt.Printf("error: %s\n", err.Error())
+		os.Exit(1)
 	}
 }
